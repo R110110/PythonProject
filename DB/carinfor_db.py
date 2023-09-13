@@ -2,16 +2,16 @@ import mysql.connector
 import pandas as pd
 
 # CSV 파일을 데이터프레임으로 읽어오기
-data = pd.read_csv(r'C:\Users\ii818\git\surinam3\DB\카정리.csv', encoding='utf-8')
-
+print('aaaa')
+data = pd.read_csv(r'E:\programming\surisuricarsuri\surinam3\DB\filtered_data_repair(통합).csv', encoding='utf-8')
 print(data[:10])
 
 # 데이터베이스 연결
 conn = mysql.connector.connect(
     host='127.0.0.1',
-    port = 3306,
+    port = 3029,
     user='root',
-    password='123',
+    password='Coda1028114187?',
     database='carsuri'
 )
 cursor = conn.cursor()

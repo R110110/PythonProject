@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import pandas as pd
 from django.db.models import Avg
-from myapp.models import RepairCost
+from project.carsuri.models import RepairCost
 # Create your views here.
 
 def mainFunc(request):

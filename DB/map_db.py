@@ -5,16 +5,16 @@ import csv
 # 데이터베이스 연결
 conn = mysql.connector.connect(
     host='127.0.0.1',
-    port = 3306,
+    port = 3029,
     user='root',
-    password='123',
+    password='Coda1028114187?',
     database='carsuri'
 )
 cursor = conn.cursor()
 cursor = conn.cursor()
 
 # CSV 파일 경로
-csv_file = "../DB/map.csv"
+csv_file = r"E:\programming\surisuricarsuri\surinam3\DB\map.csv"
 
 # map_table 생성
 create_maker_table = '''
