@@ -5,17 +5,17 @@ import pandas as pd
 csv_file_path = 'data.csv'
 
 # CSV 파일을 데이터프레임으로 읽어오기
-df = pd.read_csv(r'E:\programming\surisuricarsuri\surinam3\DB\filtered_data_repair(통합).csv', encoding='utf-8')
-rp = pd.DataFrame(columns=['maker_num', 'model_num', 'detail_num', 'cost', 'exchange', 'repair'])
+df = pd.read_csv(r'filtered_data_repair(수리정보).csv', encoding='euc-kr')
+rp = pd.DataFrame(columns=['maker_num', 'model_num', 'detail_num', 'cost', 'repair'])
 
 print(df[:10])
 # 데이터베이스 연결
 conn = mysql.connector.connect(
     host='127.0.0.1',
-    port = 3029,
+    port = 3306,
     user='root',
-    password='Coda1028114187?',
-    database='carsuri'
+    password='123',
+    database='car'
 )
 cursor = conn.cursor()
 
@@ -43,21 +43,12 @@ rp['model_num'] = df['model'].map(model_table.set_index('model_name')['model_no'
 cursor.execute("SELECT detail_no, detail_name FROM detail")
 rows = cursor.fetchall()
 model_table = pd.DataFrame(rows, columns=['detail_no', 'detail_name'])
-print(df['detail'][:10])
-print(model_table[:10])
-print(rp[:10])
 
-# 중복된 detail_name을 가지는 행을 제거하여 unique_detail_table 생성
-unique_detail_table = model_table.drop_duplicates(subset=['detail_name'])
-
-# 데이터프레임(df_unique_details)에서 detail_name과 일치하는 detail_num으로 치환
-rp['detail_num'] = df['detail'].map(unique_detail_table.set_index('detail_name')['detail_no'])
-# "rp" 데이터프레임에 "cost", "exchange", "repair" 컬럼 추가
+# 데이터프레임(df)에서 model_name과 일치하는 model_num으로 치환
+rp['detail_num'] = df['detail'].map(model_table.set_index('detail_name')['detail_no'])
+# "rp" 데이터프레임에 "cost", "repair" 컬럼 추가
 rp['cost'] = df['cost_total']
-rp['exchange'] = df['exchange']
 rp['repair'] = df['repair']
-
-rp = rp.dropna()
 
 rp.to_csv('detest(수리견적).csv', encoding='utf-8-sig')
 
@@ -71,7 +62,6 @@ CREATE TABLE IF NOT EXISTS repair_cost (
     model_num INT(11),
     detail_num INT(11),
     cost INT(11),
-    exchange VARCHAR(255),
     repair VARCHAR(255),
     FOREIGN KEY (maker_num) REFERENCES maker (maker_no),
     FOREIGN KEY (model_num) REFERENCES model (model_no),
@@ -79,14 +69,11 @@ CREATE TABLE IF NOT EXISTS repair_cost (
 )
 """
 
-
-
-
 # repair_cost 테이블 생성
 cursor.execute(create_table_query)
 # "rp" 데이터프레임의 값들을 "repair_cost" 테이블에 삽입
 for row in rp.itertuples(index=False):
-    cursor.execute("INSERT INTO repair_cost (maker_num, model_num, detail_num, cost, exchange, repair) VALUES (%s, %s, %s, %s, %s, %s)", row)
+    cursor.execute("INSERT INTO repair_cost (maker_num, model_num, detail_num, cost, repair) VALUES ( %s, %s, %s, %s, %s)", row)
 
 
 # 변경사항 저장
